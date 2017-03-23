@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once '../vendor/autoload.php';
 
 // Create and configure Slim app
 $app = new \Slim\App(['settings' => [ 'addContentLengthHeader' => false]]);
@@ -36,7 +36,7 @@ $app->get('/[hello/{name}]', function ($request, $response, $args) {
     $title = empty($args['name']) ? 'you' : $args['name'] ;
     return $this->view->render($response, 'homepage.html', [
         'title' => 'Hello ' . $title,
-        'body' => 'And welcome!'
+        'body' => "And welcome! Here is a random string : " . MyApp\Utility\Math::getARandomString()
     ]);
 })->setName('homepage');
 
