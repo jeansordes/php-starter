@@ -1,5 +1,5 @@
 <?php
-require_once '../vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 session_start();
 
@@ -11,8 +11,8 @@ $container = $app->getContainer();
 
 // Register component on container
 $container['view'] = function ($container) {
-    $view = new \Slim\Views\Twig(__DIR__ . '/templates', [
-        'cache' => __DIR__ . '/templates/cache'
+    $view = new \Slim\Views\Twig(__DIR__ . '/src/templates', [
+        'cache' => __DIR__ . '/src/templates/cache'
     ]);
     
     // Instantiate and add Slim specific extension
