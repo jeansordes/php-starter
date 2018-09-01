@@ -1,46 +1,55 @@
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
-
 session_start();
 
 // Create and configure Slim app
-$app = new \Slim\App(['settings' => [ 'addContentLengthHeader' => false]]);
+$app = new \Slim\App(['settings' => [
+    'addContentLengthHeader' => false,
+    'displayErrorDetails' => true,
+]]);
 
 // Get container
 $container = $app->getContainer();
 
 // Register component on container
 $container['view'] = function ($container) {
-    $view = new \Slim\Views\Twig(__DIR__ . '/src/templates', [
-        'cache' => __DIR__ . '/src/templates/cache'
+    $loader = new Twig_Loader_Filesystem(__DIR__ . '/src/templates');
+    $twig = new Twig_Environment($loader, [
+        'cache' => false,
+        // 'cache' => __DIR__ . '/src/templates/cache',
     ]);
-    
-    // Instantiate and add Slim specific extension
-    $basePath = rtrim(str_ireplace('index.php', '', $container['request']->getUri()->getBasePath()), '/');
-    $view->addExtension(new Slim\Views\TwigExtension($container['router'], $basePath));
 
-    return $view;
+    $twig->addGlobal('current_user', (empty($_SESSION['user']) ? null : $_SESSION['user']));
+
+    return $twig;
 };
 
 //Override the default Not Found Handler
 $container['notFoundHandler'] = function ($c) {
     return function ($request, $response) use ($c) {
-        $c->view->render($response, 'error.html', [ 'message' => '404 - page not found' ]);
         return $c['response']
             ->withStatus(404)
-            ->withHeader('Content-Type', 'text/html');            
+            ->withHeader('Content-Type', 'text/html')
+            ->write($c->view->render('error.html.twig', ['message' => '404 - Page introuvable']));
+    };
+};
+$container['errorHandler'] = function ($c) {
+    return function ($request, $response, $exception) use ($c) {
+        return $c['response']
+            ->withStatus(500)
+            ->withHeader('Content-Type', 'text/html')
+            ->write($c->view->render('error.html.twig', [
+                'message' => $exception->getMessage(),
+                "details" => $c['settings']['displayErrorDetails'] ? $exception->getFile() . ":" . $exception->getLine() : '',
+            ]));
     };
 };
 
+require 'src/routes/sample.php';
 
-// Define app routes
-$app->get('/[hello/{name}]', function ($request, $response, $args) {
-    $title = empty($args['name']) ? 'you' : $args['name'] ;
-    return $this->view->render($response, 'homepage.html', [
-        'title' => 'Hello ' . $title,
-        'body' => "And welcome! Here is a random string : " . MyApp\Utility\Math::getARandomString()
-    ]);
-})->setName('homepage');
+$app->get('{url:.*}/', function ($request, $response, $args) {
+    return $response->withStatus(302)->withHeader('Location', $args["url"]);
+});
 
 // Run app
 $app->run();
