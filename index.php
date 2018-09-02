@@ -29,7 +29,6 @@ $container['notFoundHandler'] = function ($c) {
     return function ($request, $response) use ($c) {
         return $c['response']
             ->withStatus(404)
-            ->withHeader('Content-Type', 'text/html')
             ->write($c->view->render('error.html.twig', ['message' => '404 - Page introuvable']));
     };
 };
@@ -37,7 +36,6 @@ $container['errorHandler'] = function ($c) {
     return function ($request, $response, $exception) use ($c) {
         return $c['response']
             ->withStatus(500)
-            ->withHeader('Content-Type', 'text/html')
             ->write($c->view->render('error.html.twig', [
                 'message' => $exception->getMessage(),
                 "details" => $c['settings']['displayErrorDetails'] ? $exception->getFile() . ":" . $exception->getLine() : '',
@@ -48,7 +46,7 @@ $container['errorHandler'] = function ($c) {
 require 'src/routes/sample.php';
 
 $app->get('{url:.*}/', function ($request, $response, $args) {
-    return $response->withStatus(302)->withHeader('Location', $args["url"]);
+    return $response->withRedirect($args["url"], 301);
 });
 
 // Run app
