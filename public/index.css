@@ -1,0 +1,13 @@
+* {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #444;
+}
+
+pre {
+    font-size: .8em;
+    color: gray;
+}
+
+.text-centered {
+    text-align: center;
+}

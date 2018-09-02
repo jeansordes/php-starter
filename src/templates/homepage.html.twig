@@ -1,9 +1,10 @@
-<html>
-<head>
-<title>{{ title }}</title>
-</head>
-<body>
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+<div class="text-centered">
     <h1>{{ title }}</h1>
     <p>{{ body }}</p>
-</body>
-</html>
+</div>
+{% endblock %}

@@ -1,9 +1,13 @@
-<html>
-<head>
-<title>Error</title>
-</head>
-<body>
-    <h1>Error!</h1>
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+<div class="text-centered">
+    <h1>Ah ?</h1>
     <p>{{ message }}</p>
-</body>
-</html>
+    {% if details %}
+    <pre>{{ details }}</pre>
+    {% endif %}
+</div>
+{% endblock %}
