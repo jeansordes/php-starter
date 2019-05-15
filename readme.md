@@ -19,7 +19,7 @@ Go in your terminal, and type the following commands :
 ```bash
 git clone https://github.com/eurakilon/sample-website.git
 cd sample-website
-php composer.phar update -o
+php init.php
 php -S localhost:80
 ```
 
