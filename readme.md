@@ -12,7 +12,7 @@ Feel free to use it :)
 ## Prerequisite
 You need the following programs installed :
 - php (http://php.net/manual/en/install.php)
-- git (https://www.atlassian.com/git/tutorials/install-git)
+- git (https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
 ## Getting started
 Go in your terminal, and type the following commands :
