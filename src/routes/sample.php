@@ -1,4 +1,5 @@
 <?php
+
 $app->get('/[hello/{name:[A-Za-z]*}]', function ($request, $response, $args) {
     $title = empty($args['name']) ? 'you' : $args['name'];
     return $this->view->render('homepage.html.twig', [

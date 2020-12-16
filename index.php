@@ -13,8 +13,8 @@ $container = $app->getContainer();
 
 // Register component on container
 $container['view'] = function ($container) {
-    $loader = new Twig_Loader_Filesystem(__DIR__ . '/src/templates');
-    $twig = new Twig_Environment($loader, [
+    $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/src/templates');
+    $twig = new \Twig\Environment($loader, [
         'cache' => false,
         // 'cache' => __DIR__ . '/src/templates/cache',
     ]);
