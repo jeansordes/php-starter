@@ -1,19 +1,27 @@
 {% apply spaceless %}
 <!DOCTYPE html>
 <html>
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="/public/index.css">
-    <title>{% block title %}{% endblock %}</title>
-</head>
-
-<body>
-    {% block body %}{% endblock %}
-    <script src="/public/index.js"></script>
-</body>
-
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		<link href="{{ base_path }}/public/css/bootstrap.min.5.0.0-beta1.css" rel="stylesheet">
+		<link href="{{ base_path }}/public/css/styles.css" rel="stylesheet">
+		<title>
+			{% block title %}{% endblock %}
+		</title>
+	</head>
+	<body>
+		{% if session_alert %}
+			<div class="alert {{ session_alert.meaning }} alert-dismissible fade show m-3" role="alert">
+				{{ session_alert.message|raw }}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+		{% endif %}
+		{% block body %}{% endblock %}
+		<script src="{{ base_path }}/public/js/bootstrap.bundle.min.5.0.0-beta1.js"></script>
+		<script src="{{ base_path }}/public/js/script.js"></script>
+	</body>
 </html>
 {% endapply %}

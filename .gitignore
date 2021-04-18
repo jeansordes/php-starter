@@ -4,3 +4,5 @@ src/templates/cache/*
 !**/.gitkeep
 composer.lock
 composer.phar
+uploads/*
+.env

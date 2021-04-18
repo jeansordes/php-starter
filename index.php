@@ -1,51 +1,23 @@
 <?php
+
+use Slim\Http\Request;
+use Slim\Http\Response;
+
 require_once __DIR__ . '/vendor/autoload.php';
 session_start();
 
-// Create and configure Slim app
-$app = new \Slim\App(['settings' => [
-    'addContentLengthHeader' => false,
-    'displayErrorDetails' => true,
-]]);
+// dotenv
+(new \Symfony\Component\Dotenv\Dotenv())->load(__DIR__ . '/.env');
 
-// Get container
-$container = $app->getContainer();
+require_once 'src/utilities.php';
+require_once 'src/slim-config.php';
 
-// Register component on container
-$container['view'] = function ($container) {
-    $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/src/templates');
-    $twig = new \Twig\Environment($loader, [
-        'cache' => false,
-        // 'cache' => __DIR__ . '/src/templates/cache',
-    ]);
+// routes
+foreach (glob("src/routes/*.php") as $filename) require_once $filename;
+foreach (glob("src/routes/**/*.php") as $filename) require_once $filename;
 
-    $twig->addGlobal('current_user', (empty($_SESSION['user']) ? null : $_SESSION['user']));
-
-    return $twig;
-};
-
-//Override the default Not Found Handler
-$container['notFoundHandler'] = function ($c) {
-    return function ($request, $response) use ($c) {
-        return $c['response']
-            ->withStatus(404)
-            ->write($c->view->render('error.html.twig', ['message' => '404 - Page introuvable']));
-    };
-};
-$container['errorHandler'] = function ($c) {
-    return function ($request, $response, $exception) use ($c) {
-        return $c['response']
-            ->withStatus(500)
-            ->write($c->view->render('error.html.twig', [
-                'message' => $exception->getMessage(),
-                "details" => $c['settings']['displayErrorDetails'] ? $exception->getFile() . ":" . $exception->getLine() : '',
-            ]));
-    };
-};
-
-require 'src/routes/sample.php';
-
-$app->get('{url:.*}/', function ($request, $response, $args) {
+// URL ending with / redirects to URL without /
+$app->get('{url:.*}/', function (Request $request, Response $response, array $args) {
     return $response->withRedirect($args["url"], 301);
 });
 

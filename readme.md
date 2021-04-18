@@ -4,26 +4,24 @@ Because I do a lot of side projects all the time, I created this repo in order t
 Feel free to use it :)
 
 ## What's included
-- Slim Framework installed (http://www.slimframework.com/)
-- A customisable "404 not found" page
+- Slim V4 PHP Framework
 - Twig engine with all the templates located in the `src/templates` folder
-- PSR-4 implementation (use of namespaces)
+- Bootstrap V5 (CSS + JS)
 
-## Prerequisite
-You need the following programs installed :
-- php (http://php.net/manual/en/install.php)
-- git (https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+Also, once `.env` is configured (see `.default.env` for an example), you have the following utilities available as well :
+- JWT encode / decode functions
+- Email utilities
 
 ## Getting started
-Go in your terminal, and type the following commands :
+### Installation
 ```bash
-git clone https://github.com/eurakilon/sample-website.git
-cd sample-website
-php init.php
-php -S localhost:80
+php composer-update.php
 ```
-
-Then go to http://localhost to see the welcoming page
+This project is managed with Composer, this script will download a local version of `composer.phar`, install all the dependencies required, and delete the composer file right after it.
+### Quick run (no need for Apache)
+```bash
+./start.cmd
+```
 
 ## Troubleshooting
 ### "Failed to listen on localhost:80"

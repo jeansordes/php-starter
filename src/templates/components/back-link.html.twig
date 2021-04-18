@@ -1,0 +1,9 @@
+{% if href %}
+	<a href="{{ href }}" class="btn btn-outline-primary text-decoration-none me-3">
+		<i class="material-icons">arrow_back</i>
+		{{ text ?: 'Revenir en arrière' }}</a>
+{% else %}
+	<span class="backlink-js btn btn-outline-primary text-decoration-none me-3">
+		<i class="material-icons">arrow_back</i>
+		{{ text ?: 'Revenir en arrière' }}</span>
+{% endif %}
