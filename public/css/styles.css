@@ -36,7 +36,7 @@ body {
     border-color: currentColor;
 }
 
-.btn-primary:focus, .btn-outline-primary:focus {
+.btn-primary:focus, .btn-primary:focus:active, .btn-outline-primary:focus, .btn-outline-primary:focus:active {
     box-shadow: 0 0 0 0.25rem var(--primary-color-light);
 }
 

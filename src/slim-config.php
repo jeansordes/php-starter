@@ -43,13 +43,17 @@ $container['view'] = function ($container) {
         $basePath = strlen($basePath) > 1 ? $basePath : '';
     }
     $twig->addGlobal('base_path', $basePath);
-
     $twig->addGlobal('current_path', parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH)); // https://stackoverflow.com/a/25944383/5736301
     $twig->addGlobal('is_localhost', in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1']));
 
+    // CURRENT USER
+    $twig->addGlobal('current_user', (empty($_SESSION['current_user']) ? null : $_SESSION['current_user']));
+
+    // Displays alerts created with the function `alert` in /src/utilities.php
     $twig->addGlobal('session_alert', (empty($_SESSION['session_alert']) ? null : $_SESSION['session_alert']));
     $_SESSION['session_alert'] = null;
 
+    // French equivalent to "2 minutes ago"
     $filter = new \Twig\TwigFilter('timeago', function ($datetime) {
         $time = time() - strtotime($datetime);
 
@@ -85,6 +89,7 @@ $container['notFoundHandler'] = function ($c) {
 };
 $container['errorHandler'] = function ($c) {
     return function ($request, $response, $exception) use ($c) {
+        console_log($exception);
         return $c['response']
             ->withStatus(500)
             ->write($c->view->render('error.html.twig', [
