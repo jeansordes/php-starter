@@ -9,16 +9,24 @@ Feel free to use it :)
 - Bootstrap V5 (CSS + JS)
 
 Also, once `.env` is configured (see `.default.env` for an example), you have the following utilities available as well :
+- Basic signin system (without the signup part)
 - JWT encode / decode functions
 - Email utilities
 
 ## Getting started
-### Installation
 ```bash
 php composer-update.php
 ```
-This project is managed with Composer, this script will download a local version of `composer.phar`, install all the dependencies required, and delete the composer file right after it.
-### Quick run (no need for Apache)
+(This project is managed with Composer, this script will download a local version of `composer.phar`, install all the dependencies required, and delete the composer file right after it)
+
+After you installed the PHP libraries, you need to complete the `.env` file with the Database informations, the email informations and a JWT key. There is a `.default.env` file that you can copy and edit
+
+After you have created a database, you can initialize it by running the 1 - 2 scripts in `admin_script.php`
+```bash
+php admin_script.php
+```
+
+Once you have installed everything, you can run the project with :
 ```bash
 ./start.cmd
 ```

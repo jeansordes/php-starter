@@ -1,28 +1,29 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Se connecter{% endblock %}
+{% block title %}Se connecter
+{% endblock %}
 
 {% block body %}
-<div class="container py-3 py-md-5">
-    <div class="mb-3 text-center">{% include 'components/logo.html.twig' %}</div>
-    <h4 class="mb-3">Se connecter</h4>
-    <form method="POST">
-        <p>
-            <label class="form-label">Votre email</label>
-            <input type="email" class="form-control" name="email" value="{{ email }}" />
-        </p>
+	<div class="container py-3 py-md-5 col-4 m-auto">
+		<div class="mb-5 text-center">{% include 'components/logo.html.twig' %}</div>
+		<h4 class="mb-3">Se connecter</h4>
+		<form method="POST">
+			<div>
+				<label class="form-label">Votre email</label>
+				<input type="email" class="form-control" name="email" value="{{ email }}"/>
+			</div>
 
-        <p>
-            <label class="form-label">Votre mot de passe</label>
-            <input type="password" class="form-control" name="password" value="{{ password }}" />
-        </p>
+			<div>
+				<label class="form-label">Votre mot de passe</label>
+				<input type="password" class="form-control" name="password" value="{{ password }}"/>
+			</div>
 
-        <p>
-            <button class="btn btn-primary">Se connecter</button>
-        </p>
-    </form>
-    <p>
-        <a href="/password-reset">Vous avez oublié votre mot de passe ?</a>
-    </p>
-</div>
+			<div class="my-3 d-flex">
+                <button class="btn btn-primary col">Se connecter</button>
+			</div>
+		</form>
+		<p>
+			<a href="{{ base_path }}/password-reset">Vous avez oublié votre mot de passe ?</a>
+		</p>
+	</div>
 {% endblock %}
