@@ -1,6 +1,7 @@
 :root {
     --primary-color-light: hsl(300, 30%, 60%);
     --primary-color: hsl(300, 100%, 30%);
+    --primary-color-transparent: hsla(300, 100%, 30%, .5);
     --primary-color-dark: hsl(300, 100%, 20%);
 }
 
@@ -37,7 +38,7 @@ body {
 }
 
 .btn-primary:focus, .btn-primary:focus:active, .btn-outline-primary:focus, .btn-outline-primary:focus:active {
-    box-shadow: 0 0 0 0.25rem var(--primary-color-light);
+    box-shadow: 0 0 0 0.25rem var(--primary-color-transparent);
 }
 
 a {
