@@ -3,28 +3,25 @@ Because I do a lot of side projects all the time, I created this repo in order t
 
 Feel free to use it :)
 
+## Basic prerequisites
+- PHP needed (duh)
+- SQLite3 extension activated
+
 ## What's included
 - Slim V4 PHP Framework
 - Twig engine with all the templates located in the `src/templates` folder
 - Bootstrap V5 (CSS + JS)
-
-Also, once `.env` is configured (see `.default.env` for an example), you have the following utilities available as well :
-- Basic signin system (without the signup part)
+- Signin / signup / forgotten password
+- `.env` configuration (https://github.com/symfony/dotenv) (there is a `.default.env` file that is automatically copied to make you a `.env` file when you run the app once)
+- Email utilities (if `app_mode=prod` in the `.env` file, otherwise the emails are displayed on screen)
 - JWT encode / decode functions
-- Email utilities
+- MariaDB if `.env` is configured accordingly
 
 ## Getting started
 ```bash
 php composer-update.php
 ```
 (This project is managed with Composer, this script will download a local version of `composer.phar`, install all the dependencies required, and delete the composer file right after it)
-
-After you installed the PHP libraries, you need to complete the `.env` file with the Database informations, the email informations and a JWT key. There is a `.default.env` file that you can copy and edit
-
-After you have created a database, you can initialize it by running the 1 - 2 scripts in `admin_script.php`
-```bash
-php admin_script.php
-```
 
 Once you have installed everything, you can run the project with :
 ```bash

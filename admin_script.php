@@ -1,18 +1,20 @@
 <?php
 require_once __DIR__ . '/src/sql-utilities.php';
+require_once __DIR__ . '/src/utilities.php';
+loadDotEnv();
 
 // List of all the scripts that could be executed
 $scripts = [
     [
         'drop database + rebuild it',
         function () {
-            runFile('init_db.sql');
+            runMysqlFile('init_mariadb.sql');
         }
     ],
     [
         'add admin',
         function () {
-            runFile('create_admin.sql');
+            runMysqlFile('create_admin.sql');
         }
     ],
     [

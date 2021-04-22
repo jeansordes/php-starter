@@ -18,18 +18,7 @@ create or replace table users (
         foreign key (user_role) references _enum_user_role(description)
 );
 
--- It is better to have every mutation (INSERT, DELETE, UPDATE) in a function
-DELIMITER $$
-create or replace function new_user (
-    p_email varchar(200),
-    p_password_hash text,
-    p_user_role varchar(50)
-) returns int(11) begin
-    insert into users(email, password_hash, user_role)
-        values (p_email, p_password_hash, p_user_role);
-    set @id_user = last_insert_id();
-    return @id_user;
-end
-$$
+-- admin account (admin_php_starter@yopmail.com:admin)
+insert into users(email, password_hash, user_role) values ('admin_php_starter@yopmail.com', '$2y$12$hA2wxJZhBLdHPJPQHQA.2e.sSUOqI/HAndSH8/9LD9WHn.cZ8qfz2', 'admin');
 
 select 'Query done';

@@ -6,10 +6,9 @@ use Slim\Http\Response;
 require_once __DIR__ . '/vendor/autoload.php';
 session_start();
 
-// dotenv
-(new \Symfony\Component\Dotenv\Dotenv())->load(__DIR__ . '/.env');
-
 require_once 'src/utilities.php';
+loadDotEnv();
+
 require_once 'src/slim-config.php';
 
 // routes

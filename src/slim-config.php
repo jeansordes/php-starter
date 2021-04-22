@@ -1,9 +1,11 @@
 <?php
 
+require_once __DIR__ . '/utilities.php';
+
 // Create and configure Slim app
 $app = new \Slim\App(['settings' => [
     'addContentLengthHeader' => false,
-    'displayErrorDetails' => true,
+    'displayErrorDetails' => $_ENV['app_mode'] == 'dev',
 ]]);
 
 // Get container
@@ -13,36 +15,11 @@ $container = $app->getContainer();
 $container['view'] = function ($container) {
     $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/templates');
     $twig = new \Twig\Environment($loader, [
-        'cache' => false,
-        // 'cache' => __DIR__ . '/templates/cache',
+        'cache' => $_ENV['app_mode'] == 'dev' ? false : __DIR__ . '/templates/cache',
     ]);
 
     // In the case the base path is not http://www.exemple.com/ but something like http://www.exemple.com/my-app/
-    // Code taken from https://github.com/selective-php/basepath/blob/master/src/BasePathDetector.php
-    $basePath = '';
-    if (PHP_SAPI === 'apache2handler') {
-        // For apache
-        if (isset($_SERVER['REQUEST_URI'])) {
-            $scriptName = $_SERVER['SCRIPT_NAME'];
-            $basePath = (string)parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-            $scriptName = str_replace('\\', '/', dirname(dirname($scriptName)));
-            if ($scriptName === '/') {
-                $basePath = '';
-            } else {
-                $length = strlen($scriptName);
-                if ($length > 0 && $scriptName !== '/') {
-                    $basePath = substr($basePath, 0, $length);
-                }
-                $basePath = strlen($basePath) > 1 ? $basePath : '';
-            }
-        }
-    } else if (PHP_SAPI === 'cli-server') {
-        // For built-in server
-        $scriptName = $_SERVER['SCRIPT_NAME'];
-        $basePath = str_replace('\\', '/', dirname($scriptName));
-        $basePath = strlen($basePath) > 1 ? $basePath : '';
-    }
-    $twig->addGlobal('base_path', $basePath);
+    $twig->addGlobal('base_url', getBaseUrl());
     $twig->addGlobal('current_path', parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH)); // https://stackoverflow.com/a/25944383/5736301
     $twig->addGlobal('is_localhost', in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1']));
 
@@ -94,7 +71,7 @@ $container['errorHandler'] = function ($c) {
             ->withStatus(500)
             ->write($c->view->render('error.html.twig', [
                 'message' => $exception->getMessage(),
-                "details" => $c['settings']['displayErrorDetails'] ? $exception->getFile() . ":" . $exception->getLine() : '',
+                "details" => $_ENV['app_mode'] ? $exception->getFile() . ":" . $exception->getLine() : '',
             ]));
     };
 };

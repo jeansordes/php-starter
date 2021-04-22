@@ -7,37 +7,95 @@ use PHPMailer\PHPMailer\Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-function sendEmail($to, $subject, $body)
+function redirect($response, $url)
 {
-    $mail = new PHPMailer();
+    $r_url = getBaseUrl() . preg_replace('#/+#', '/', '/' . $url);
+    return $response->withRedirect($r_url);
+}
 
-    //Server settings
-    $mail->SMTPDebug = SMTP::DEBUG_SERVER;
-    $mail->isSMTP();
-    $mail->Host       = $_ENV['email_smtp_host'];
-    $mail->SMTPAuth   = true;
-    $mail->Username   = $_ENV['email_username'];
-    $mail->Password   = $_ENV['email_password'];
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-    $mail->Port       = $_ENV['email_smtp_port'];
+function getBaseUrl()
+{
+    if (empty($_SERVER['BASE_URL'])) {
+        // Code taken from https://github.com/selective-php/basepath/blob/master/src/BasePathDetector.php
+        $baseUrl = '';
+        if (PHP_SAPI === 'apache2handler') {
+            // For apache
+            if (isset($_SERVER['REQUEST_URI'])) {
+                $scriptName = $_SERVER['SCRIPT_NAME'];
+                $baseUrl = (string)parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+                $scriptName = str_replace('\\', '/', dirname(dirname($scriptName)));
+                if ($scriptName === '/') {
+                    $baseUrl = '';
+                } else {
+                    $length = strlen($scriptName);
+                    if ($length > 0 && $scriptName !== '/') {
+                        $baseUrl = substr($baseUrl, 0, $length);
+                    }
+                    $baseUrl = strlen($baseUrl) > 1 ? $baseUrl : '';
+                }
+            }
+        } else if (PHP_SAPI === 'cli-server') {
+            // For built-in server
+            $scriptName = $_SERVER['SCRIPT_NAME'];
+            $baseUrl = str_replace('\\', '/', dirname($scriptName));
+            $baseUrl = strlen($baseUrl) > 1 ? $baseUrl : '';
+        }
+        $_SERVER['BASE_URL'] = 'http://' . $_SERVER['HTTP_HOST'] . $baseUrl;
+    }
+    return $_SERVER['BASE_URL'];
+}
 
-    // NO OUTPUT
-    $mail->SMTPDebug = false;
-    $mail->do_debug = 0;
+function loadDotEnv()
+{
+    if (!file_exists(__DIR__ . '/../.env')) {
+        if (!file_exists(__DIR__ . '/../.default.env'))
+            die("No '.env' or '.default.env' file found, the project can't run");
+        copy(__DIR__ . '/../.default.env', __DIR__ . '/../.env');
+    }
+    (new \Symfony\Component\Dotenv\Dotenv())->load(__DIR__ . '/../.env');
+}
 
-    //Recipients
-    $mail->setFrom($_ENV['email_username']);
-    $mail->addAddress($to);
+function sendEmail($app, $response, $to, $subject, $body)
+{
+    if ($_ENV['app_mode'] == 'dev') {
+        return $response->write($app->view->render('homepage.html.twig', [
+            'title' => $subject,
+            'body' => '<div class="alert alert-warning">Vous êtes en mode "dev" '
+                . 'ce que vous voyez actuellement est le mail qu\'on aurait envoyé en mode "prod" à '
+                . $to . '</div>' . $body,
+        ]));
+    } else {
+        // envoyer un email à l'adresse renseignée
+        $mail = new PHPMailer();
 
-    // Content
-    $mail->isHTML(true);
-    $mail->Subject = $subject;
-    $mail->Body = $body;
-    $mail->CharSet = 'UTF-8';
+        //Server settings
+        $mail->SMTPDebug = SMTP::DEBUG_SERVER;
+        $mail->isSMTP();
+        $mail->Host       = $_ENV['email_smtp_host'];
+        $mail->SMTPAuth   = true;
+        $mail->Username   = $_ENV['email_username'];
+        $mail->Password   = $_ENV['email_password'];
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port       = $_ENV['email_smtp_port'];
 
-    if (!$mail->send()) {
-        throw new Exception("<p>Message could not be sent. Mailer Error: {$mail->ErrorInfo}</p>"
-            . json_encode(['TO' => $to, 'SUBJECT' => $subject, 'BODY' => $body]));
+        // NO OUTPUT
+        $mail->SMTPDebug = false;
+        $mail->do_debug = 0;
+
+        //Recipients
+        $mail->setFrom($_ENV['email_username']);
+        $mail->addAddress($to);
+
+        // Content
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body = $body;
+        $mail->CharSet = 'UTF-8';
+
+        if (!$mail->send()) {
+            throw new Exception("<p>Message could not be sent. Mailer Error: {$mail->ErrorInfo}</p>"
+                . json_encode(['TO' => $to, 'SUBJECT' => $subject, 'BODY' => $body]));
+        }
     }
 }
 

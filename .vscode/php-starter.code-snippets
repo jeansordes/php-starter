@@ -1,0 +1,155 @@
+{
+	// Place your espace de travail al3c2021phpslim snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"scope": "javascript,typescript",
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+	"DB switch cases": {
+		"scope": "php",
+		"prefix": "switch_db_type",
+		"body": [
+			"switch (\\$this->_db_type) {",
+            "    case 'sqlite3':",
+            "        $0",
+            "        break;",
+            "    case 'mariadb':",
+            "        break;",
+            "    default:",
+            "        die(\"Unknown DB type\");",
+            "}",
+		],
+	},
+    "bootstrap input": {
+        "scope": "twig,html",
+        "prefix": "input_bootstrap",
+        "body": [
+            "<div class=\"mb-2\">",
+            "   <label class=\"form-label\">$0</label>",
+            "   <input name=\"$1\" value=\"{{ $1 }}\" type=\"$2\" class=\"form-control\" />",
+            "</div>",
+        ],
+    },
+    "new template": {
+        "scope": "twig,html",
+        "prefix": "!!",
+        "body": [
+            "{% extends 'base.html.twig' %}",
+            "",
+            "{% block title %}",
+            "    $1",
+            "{% endblock %}",
+            "",
+            "{% block body %}",
+            "    <div class=\"container\">",
+            "        {% include 'components/connected-as.html.twig' %}",
+            "        $0",
+            "    </div>",
+            "{% endblock %}",
+        ],
+    },
+    "html tableau list": {
+        "scope": "twig,html",
+        "prefix": "list_bootstrap",
+        "body": [
+            "{% if ${1:entites_pluriel}|length > 0 %}",
+            "    <div class=\"card\">",
+            "        <ul class=\"list-group list-group-flush\">",
+            "            {% for ${2:entite_singulier} in ${1:entites_pluriel} %}",
+            "                <li class=\"list-group-item\">",
+            "                    <h5>{{ ${2:entite_singulier} }}</h5>",
+            "                    <p>${3:Description de l'entité en cours}</p>",
+            "                </li>",
+            "            {% endfor %}",
+            "        </ul>",
+            "    </div>",
+            "{% else %}",
+            "    <p class=\"text-muted fst-italic\">Il n'y a aucun ${1:entites_pluriel} à afficher</p>",
+            "{% endif %}",
+        ],
+    },
+    "bootstrap selection option": {
+        "scope": "twig,html",
+        "prefix": "select_option_bootstrap",
+        "body": [
+            "<div class=\"col\">",
+            "    <label class=\"form-label\">${1:Input description}</label>",
+            "    <select name=\"${2:field name}\" class=\"form-control form-select\">",
+            "        <option value=\"\" {{ ${2:field name}=='' ? 'selected' : '' }}></option>",
+            "        <option value=\"option1\" {{ ${2:field name}=='option1' ? 'selected' : '' }}>Option 1</option>",
+            "    </select>",
+            "</div>",
+        ],
+    },
+    "bootstrap tableau": {
+        "scope": "twig,html",
+        "prefix": "table_bootstrap",
+        "body": [
+            "<table class=\"table sortable-table\">",
+            "    <thead>",
+            "        <tr>",
+            "            <th scope=\"col\">${1:colonne 1}</th>",
+            "            <th scope=\"col\">${2:colonne 2}</th>",
+            "        </tr>",
+            "    </thead>",
+            "    <tbody>",
+            "        {% for {4:entité singulier} in ${3:entités pluriel} %}",
+            "            <tr>",
+            "                <th scope=\"row\">{{${4:entité singulier}.attribut1 }}</th>",
+            "                <td>{{${4:entité singulier}.attribut1 }}</td>",
+            "            </tr>",
+            "        {% endfor %}",
+            "    </tbody>",
+            "</table>",
+        ],
+    },
+    "material icons": {
+        "scope": "twig,html",
+        "prefix": "i.material-icons",
+        "body": [
+            "<i class=\"material-icons\">${1:nom de l'icone}</i>",
+        ],
+    },
+    "href": {
+        "scope": "twig,html",
+        "prefix": "a href",
+        "body": [
+            "<a href=\"{{ base_url }}/$1\" ${2:target=\"_blank\"}>${0}</i>",
+        ],
+    },
+    "redirect to current url": {
+        "scope": "php",
+        "prefix": "redirect_current_url",
+        "body": [
+            "return \\$response->withRedirect(\\$request->getUri()->getPath());$0"
+        ],
+    },
+    "return twig render": {
+        "scope": "php",
+        "prefix": "return_render",
+        "body": [
+            "return \\$response->write(\\$this->view->render('$1'));$0"
+        ],
+    },
+    "db get pdo": {
+        "scope": "php",
+        "prefix": "getdb",
+        "body": [
+            "\\$db = new DB();",
+            "\\$req = \\$db->prepare(getSqlQueryString('$1'));",
+            "\\$req->execute(['$2' => $3]);",
+            "\\$result = \\$req->fetch${4:All}();",
+            "$0",
+        ],
+    },
+}
