@@ -2,8 +2,9 @@ vendor/*
 src/templates/cache/*
 !**/.htaccess
 !**/.gitkeep
-composer.lock
 composer.phar
 uploads/*
 .env
 *.sqlite3
+.vscode/**
+!.vscode/php-starter.code-snippets
