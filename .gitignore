@@ -4,7 +4,8 @@ src/templates/cache/*
 !**/.gitkeep
 composer.phar
 uploads/*
+!uploads/.gitkeep
 .env
-*.sqlite3
+*.db
 .vscode/**
 !.vscode/php-starter.code-snippets
