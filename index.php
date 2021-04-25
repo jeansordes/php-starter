@@ -17,7 +17,7 @@ foreach (glob("src/routes/**/*.php") as $filename) require_once $filename;
 
 // URL ending with / redirects to URL without /
 $app->get('{url:.*}/', function (Request $request, Response $response, array $args) {
-    return $response->withRedirect($args["url"], 301);
+    return redirect($response->withStatus(301), $args["url"]);
 });
 
 // Run app

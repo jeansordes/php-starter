@@ -170,7 +170,7 @@ $app->post('/signup', function (Request $request, Response $response, array $arg
 
     $email = sendEmail($this, $response, $_POST['email'], "Votre compte vient d'être créé", $this->view->render(
         'emails/email-new-user.html.twig',
-        ['url' => $_SERVER['BASE_URL'] . '/?action=init_password&token=' . $jwt]
+        ['url' => getBaseUrl() . '/?action=init_password&token=' . $jwt]
     ));
     if ($_ENV['app_mode'] == 'dev') {
         return $email;
