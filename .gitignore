@@ -1,11 +1,11 @@
 vendor/*
 src/templates/cache/*
-!**/.htaccess
-!**/.gitkeep
 composer.phar
 uploads/*
-!uploads/.gitkeep
 .env
 *.db
 .vscode/**
+
+!**/.htaccess
+!**/.gitkeep
 !.vscode/php-starter.code-snippets
