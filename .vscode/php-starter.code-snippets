@@ -131,7 +131,7 @@
         "scope": "php",
         "prefix": "redirect_current_url",
         "body": [
-            "return \\$response->withRedirect(\\$request->getUri()->getPath());$0"
+            "return redirect(\\$response, \\$request->getUri()->getPath());$0"
         ],
     },
     "return twig render": {
@@ -143,12 +143,12 @@
     },
     "db get pdo": {
         "scope": "php",
-        "prefix": "getdb",
+        "prefix": "$db",
         "body": [
             "\\$db = new DB();",
-            "\\$req = \\$db->prepare(getSqlQueryString('$1'));",
-            "\\$req->execute(['$2' => $3]);",
-            "\\$result = \\$req->fetch${4:All}();",
+            "\\$req = \\$db->prepare${1:NamedQuery}('$2');",
+            "\\$req->execute(['$3' => ${4:''}]);",
+            "\\$result = \\$req->fetch${5:All}();",
             "$0",
         ],
     },
