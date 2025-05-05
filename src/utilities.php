@@ -48,7 +48,17 @@ function getBaseUrl()
             $baseUrl = str_replace('\\', '/', dirname($scriptName));
             $baseUrl = strlen($baseUrl) > 1 ? $baseUrl : '';
         }
-        $_SERVER['BASE_URL'] = 'http://' . $_SERVER['HTTP_HOST'] . $baseUrl;
+
+        // Determine protocol
+        $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? "https" : "http";
+        
+        // Get host
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        
+        // Construct full base URL
+        $_SERVER['BASE_URL'] = $protocol . '://' . $host . $baseUrl;
+        
+        error_log("Base URL constructed: " . $_SERVER['BASE_URL']);
     }
     return $_SERVER['BASE_URL'];
 }
@@ -203,4 +213,44 @@ function il_manque_les_champs($fields)
 function array_to_url_encoding($array)
 {
     return join('&', array_map((fn ($k, $v) => $k . '=' . $v), array_keys($array), $array));
+}
+
+// Function to generate a unique username (adjective + name + digits)
+function generate_unique_username() {
+    $adjectives = ['red', 'blue', 'green', 'fast', 'slow', 'big', 'small', 'happy', 'sad', 'brave'];
+    $names = ['panda', 'butterfly', 'tiger', 'lion', 'eagle', 'wolf', 'bear', 'fox', 'shark', 'whale'];
+    $db = new DB(); // Assuming DB class is available via includes
+
+    $is_unique = false;
+    $username = '';
+    $max_attempts = 10; // Prevent infinite loops
+    $attempts = 0;
+
+    while (!$is_unique && $attempts < $max_attempts) {
+        $random_adjective = $adjectives[array_rand($adjectives)];
+        $random_name = $names[array_rand($names)];
+        $random_digits = str_pad(random_int(0, 99), 2, '0', STR_PAD_LEFT); // 00-99
+        
+        $generated_username = strtolower($random_adjective . $random_name . $random_digits);
+
+        // Check uniqueness in database
+        $req = $db->prepareNamedQuery('select_user_from_username');
+        $req->execute(['username' => $generated_username]);
+        $existing_user = $req->fetch();
+
+        if (!$existing_user) {
+            $username = $generated_username;
+            $is_unique = true;
+        }
+        $attempts++;
+    }
+
+    if (!$is_unique) {
+        // Fallback or error handling if unable to generate a unique username after attempts
+        error_log("Failed to generate a unique username after " . $max_attempts . " attempts.");
+        // You might want to throw an exception or handle this case appropriately
+        return 'user_' . uniqid(); // Fallback to a less friendly but unique username
+    }
+
+    return $username;
 }

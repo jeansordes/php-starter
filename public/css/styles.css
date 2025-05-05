@@ -48,3 +48,7 @@ a {
 a:hover {
     color: var(--primary-color-dark);
 }
+
+p {
+    overflow-wrap: anywhere;
+}

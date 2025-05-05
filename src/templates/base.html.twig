@@ -12,7 +12,9 @@
 			{% block title %}{% endblock %}
 		</title>
 	</head>
-	<body class="py-3 py-md-5">
+	<body>
+		{% include 'components/navbar.html.twig' %}
+
 		{% if session_alert %}
 			<div class="alert {{ session_alert.meaning }} alert-dismissible fade show m-3" role="alert">
 				{{ session_alert.message|raw }}
@@ -20,8 +22,10 @@
 			</div>
 		{% endif %}
 		{% block body %}{% endblock %}
+
 		<script src="{{ base_url }}/public/js/bootstrap.bundle.min.5.0.0-beta1.js"></script>
 		<script src="{{ base_url }}/public/js/script.js"></script>
+		{% block javascripts %}{% endblock %}
 	</body>
 </html>
 {% endapply %}

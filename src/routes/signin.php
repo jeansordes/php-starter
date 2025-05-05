@@ -25,8 +25,10 @@ $app->get('/', function (Request $request, Response $response, array $args): Res
             'id_user' => $payload['id_user'],
             'email' => $res['email'],
             'user_role' => $res['user_role'],
+            'profile_picture' => $res['profile_picture'],
+            'username' => $res['username'],
         ];
-        if ($user_infos['id_user'] == null || $user_infos['email'] == null || $user_infos['user_role'] == null) {
+        if ($user_infos['id_user'] == null || $user_infos['email'] == null || $user_infos['user_role'] == null || $user_infos['username'] == null) {
             console_log($payload);
             console_log($user_infos);
             throw new Exception("Les infos de l'utilisateur n'ont pas été correctement initialisés");
@@ -66,30 +68,53 @@ $app->get('/login', function (Request $request, Response $response, array $args)
 $app->post('/login', function (Request $request, Response $response): Response {
     // verifier login + mdp, si oui, mettre dans $_SESSION['current_user'] : user_role + id_user + prenom + nom
     $params = $request->getParsedBody();
-    $missing_fields_message = get_form_missing_fields_message(['email', 'password'], $params);
-    if ($missing_fields_message) {
-        alert($missing_fields_message, 3);
+    
+    // Assuming the input field for email/username is still named 'email' in the form
+    $login_input = $params['email'] ?? '';
+    $password = $params['password'] ?? '';
+
+    if (empty($login_input) || empty($password)) {
+        alert(il_manque_les_champs(['email/username', 'password']), 3); // Adjust message
         return redirect($response, $request->getUri()->getPath() . '?' . array_to_url_encoding($params));
     }
+    
     $db = new DB();
+    $res = null;
+
+    // 1. Try finding user by email
     $req = $db->prepareNamedQuery('select_user_from_email');
-    $req->execute(['email' => $params['email']]);
-    if ($req->rowCount() == 0) {
-        alert("Cet email est inconnu", 3);
+    $req->execute(['email' => $login_input]);
+    $res = $req->fetch();
+
+    // 2. If not found by email, try finding user by username
+    if (!$res) {
+        $req = $db->prepareNamedQuery('select_user_from_username');
+        $req->execute(['username' => $login_input]);
+        $res = $req->fetch();
+    }
+
+    // If user is still not found
+    if (!$res) {
+        alert("Email ou nom d'utilisateur inconnu", 3); // Adjust message
         return redirect($response, $request->getUri()->getPath() . '?' . array_to_url_encoding($params));
     }
 
     // get password hash (and infos at the same time)
-    $res = $req->fetch();
+    // $res is already fetched above
+
     $user_infos = [
-        'id_user' => $res['id_utilisateur'],
+        'id_user' => $res['id_user'],
         'email' => $res['email'],
         'user_role' => $res['user_role'],
+        'profile_picture' => $res['profile_picture'],
+        'username' => $res['username'], // Ensure username is in session
     ];
 
     // check password
-    if (!password_verify($params['password'], $res['password_hash'])) {
+    if (!password_verify($password, $res['password_hash'])) {
         alert("Mot de passe incorrect", 3);
+        // Keep the email/username input value in the redirect for user convenience
+        $params['email'] = $login_input;
         return redirect($response, $request->getUri()->getPath() . '?' . array_to_url_encoding($params));
     }
 
@@ -158,7 +183,14 @@ $app->get('/signup', function (Request $request, Response $response, array $args
 
 $app->post('/signup', function (Request $request, Response $response, array $args): Response {
     $params = $request->getParsedBody();
-    // vérifier que l'email n'est pas déjà utilisé par un autre compte commercial/fournisseur
+    
+    // Check if email is provided
+    if (empty($params['email'])) {
+        alert('Email address is required.', 3);
+        return redirect($response, $request->getUri()->getPath() . '?' . array_to_url_encoding($params));
+    }
+
+    // Check if the email is already used
     $db = new DB();
     $req = $db->prepareNamedQuery('select_user_from_email');
     $req->execute(['email' => $params['email']]);
@@ -167,11 +199,34 @@ $app->post('/signup', function (Request $request, Response $response, array $arg
         return redirect($response, $request->getUri()->getPath() . '?' . array_to_url_encoding($params));
     }
 
-    // créer le compte
+    // Handle username - use provided or generate unique default
+    $username = $params['username'] ?? '';
+    
+    if (!empty($username)) {
+        // Check if provided username is unique
+        $req = $db->prepareNamedQuery('select_user_from_username');
+        $req->execute(['username' => $username]);
+        if ($req->rowCount() > 0) {
+            alert('Ce nom d\'utilisateur est déjà utilisé.', 3);
+            return redirect($response, $request->getUri()->getPath() . '?' . array_to_url_encoding($params));
+        }
+    } else {
+        // Generate a unique username if none provided
+        $username = generate_unique_username(); // Assuming generate_unique_username is available via utilities.php
+        if (empty($username)) {
+             // Fallback if unique username generation failed (shouldn't happen with retry logic)
+             alert('Impossible de générer un nom d\'utilisateur unique. Veuillez réessayer.', 3);
+             return redirect($response, $request->getUri()->getPath() . '?' . array_to_url_encoding($params));
+        }
+    }
+
+    // create the account
     $req = $db->prepareNamedQuery('insert_user');
     $req->execute([
         'email' => $params['email'],
         'user_role' => 'normal_user',
+        'password_hash' => password_hash(bin2hex(random_bytes(32)), PASSWORD_BCRYPT), // temporary random password
+        'username' => $username, // Include the determined username
     ]);
 
     $req = $db->prepareNamedQuery('select_user_from_email');

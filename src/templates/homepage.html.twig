@@ -4,7 +4,6 @@
 
 {% block body %}
 <div class="container">
-    {% if current_user.email %}{% include 'components/connected-as.html.twig' %}{% endif %}
     <h1>{{ title|raw }}</h1>
     <p>{{ body|raw }}</p>
 </div>

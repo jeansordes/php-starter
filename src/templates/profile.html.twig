@@ -1,0 +1,123 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Your Profile
+{% endblock %}
+
+{% block body %}
+	<div class="container">
+		<div class="row">
+			<div class="col-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+				<h1 class="mb-4">Your Profile</h1>
+
+				<div class="card mb-4">
+					<div class="card-body">
+						<div class="text-center mb-4">
+							<div class="position-relative d-inline-block">
+								{% if user.profile_picture %}
+									<img src="{{ base_url }}/uploads/{{ user.profile_picture }}" class="rounded-circle" width="150" height="150" alt="Profile picture">
+								{% else %}
+									<div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width: 150px; height: 150px;">
+										<span class="material-icons text-white" style="font-size: 64px;">person</span>
+									</div>
+								{% endif %}
+							</div>
+
+							<form action="{{ base_url }}/profile/picture" method="post" enctype="multipart/form-data" class="mt-3">
+								<div class="mb-3">
+									<label for="profile_picture" class="form-label">Update Profile Picture</label>
+									<input class="form-control" type="file" id="profile_picture" name="profile_picture" accept="image/*">
+								</div>
+								<button type="submit" class="btn btn-outline-primary">Upload Picture</button>
+							</form>
+						</div>
+					</div>
+				</div>
+
+				<div class="card mb-4">
+					<div class="card-body">
+						<h5 class="card-title mb-4">Account Information</h5>
+						<form action="{{ base_url }}/profile" method="post">
+							<div class="mb-3">
+								<label for="username" class="form-label">Username</label>
+								<input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" placeholder="Set a username">
+							</div>
+							<div class="d-grid">
+								<button type="submit" class="btn btn-primary">Save Username</button>
+							</div>
+						</form>
+					</div>
+				</div>
+
+				<div class="card mb-4">
+					<div class="card-body">
+						<h5 class="card-title mb-4">Backup Email</h5>
+
+						<div class="mb-4">
+							<label class="form-label">Primary Email</label>
+							<div class="form-control bg-light">{{ user.email }}</div>
+							<small class="text-muted">Used for login and primary communications</small>
+						</div>
+
+						{% if user.pending_backup_email %}
+							<div class="alert alert-warning">
+								<p class="mb-1">Pending verification:
+									{{ user.pending_backup_email }}</p>
+								<small>Please check your email for the verification link</small>
+								<form action="{{ base_url }}/profile/backup-email/resend-verification" method="post" class="mt-2">
+									<button type="submit" class="btn btn-sm btn-warning">Resend Verification Email</button>
+								</form>
+							</div>
+						{% endif %}
+
+						{% if user.backup_email %}
+							<div class="input-group">
+								<input type="text" class="form-control" value="{{ user.backup_email }}" readonly>
+								<form action="{{ base_url }}/profile/backup-email/remove" method="post" style="display: inline;">
+									<button type="submit" class="btn btn-outline-danger">Remove</button>
+								</form>
+							</div>
+							{% if user.backup_email_verified_at %}
+								<small class="text-success">✓ Verified on
+									{{ user.backup_email_verified_at|date('Y-m-d') }}</small>
+							{% else %}
+								<small class="text-warning">Not verified</small>
+							{% endif %}
+						{% endif %}
+
+						<form action="{{ base_url }}/profile/backup-email" method="post" class="mt-3">
+							<div class="input-group">
+								<input type="email" class="form-control" name="backup_email" {% if user.backup_email %} placeholder="Replace backup email" {% else %} placeholder="Add a backup email" {% endif %} required>
+								<button type="submit" class="btn btn-primary">
+									{% if user.backup_email %}
+										Replace
+									{% else %}
+										Add
+									{% endif %}
+								</button>
+							</div>
+							<small class="text-muted">Used for account recovery and important notifications</small>
+						</form>
+					</div>
+				</div>
+
+				<div class="card mb-4">
+					<div class="card-body">
+						<h5 class="card-title mb-4">Security</h5>
+						<div class="d-grid">
+							<a href="{{ base_url }}/password-edit" class="btn btn-outline-secondary">Change Password</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+	<script>
+		// Define the base URL for use in external JavaScript files
+		const baseUrl = '{{ base_url }}';
+	</script>
+	<script src="{{ base_url }}/public/js/profile.js"></script>
+{% endblock %}

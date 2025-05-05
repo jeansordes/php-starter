@@ -52,7 +52,6 @@
             "",
             "{% block body %}",
             "    <div class=\"container\">",
-            "        {% include 'components/connected-as.html.twig' %}",
             "        $0",
             "    </div>",
             "{% endblock %}",

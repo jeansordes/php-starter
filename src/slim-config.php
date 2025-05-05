@@ -85,11 +85,21 @@ $errorHandler->registerErrorRenderer('text/html', function ($exception, $display
     
     console_log($exception);
     
-    return $view->render(new \Slim\Psr7\Response(), 'error.html.twig', [
+    // Create a temporary response object to render the template into
+    $tempResponse = new \Slim\Psr7\Response();
+    
+    // Render the template into the temporary response body
+    $renderedResponse = $view->render($tempResponse, 'error.html.twig', [
         'message' => $exception->getMessage(),
         'details' => $_ENV['app_mode'] == 'dev' ? $exception->getFile() . ":" . $exception->getLine() : '',
         'title' => 'Error'
     ]);
+    
+    // Get the rendered content as a string from the temporary response body
+    $renderedContent = (string)$renderedResponse->getBody();
+    
+    // Return the rendered string content
+    return $renderedContent;
 });
 
 // Custom Not Found Handler

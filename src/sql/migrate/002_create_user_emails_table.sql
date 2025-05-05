@@ -1,0 +1,19 @@
+PRAGMA foreign_keys=off;
+
+BEGIN TRANSACTION;
+
+CREATE TABLE user_emails (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    user_id INTEGER NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    is_verified INTEGER DEFAULT 0,
+    is_default INTEGER DEFAULT 0,
+    verification_token VARCHAR(255) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id_user) ON DELETE CASCADE
+);
+
+COMMIT;
+
+PRAGMA foreign_keys=on; 

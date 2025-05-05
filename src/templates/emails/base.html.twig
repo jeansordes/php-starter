@@ -1,0 +1,26 @@
+{# src/templates/emails/base.html.twig #}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block subject %}{% endblock %}</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; margin: 0; padding: 20px; background-color: #f4f4f4; }
+        .container { max-width: 600px; margin: 20px auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        h2 { color: #333333; }
+        p { margin-bottom: 15px; }
+        .footer { margin-top: 20px; font-size: 0.9em; color: #888888; }
+        a { color: #007bff; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% block content %}
+            {# Content goes here #}
+        {% endblock %}
+    </div>
+    <div class="footer">
+        <p>Sent from Your Application Name</p>
+    </div>
+</body>
+</html> 

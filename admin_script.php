@@ -18,6 +18,12 @@ $scripts = [
         }
     ],
     [
+        'run migrations',
+        function () {
+            require_once __DIR__ . '/src/sql/migrate.php';
+        }
+    ],
+    [
         'empty the "uploads" folder',
         function () {
             // empty the "uploads" folder

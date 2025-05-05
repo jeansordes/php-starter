@@ -1,0 +1,58 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+	<div class="container">
+		<a class="navbar-brand" href="{{ base_url }}/">PHP Starter</a>
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarNav">
+			<ul class="navbar-nav me-auto">
+				<li class="nav-item">
+					<a class="nav-link" href="{{ base_url }}/">Home</a>
+				</li>
+				{% block navItems %}{% endblock %}
+			</ul>
+			<ul class="navbar-nav ms-auto">
+				{% if current_user is not null %}
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							{% if current_user.profile_picture is defined and current_user.profile_picture %}
+								<img src="{{ base_url }}/uploads/{{ current_user.profile_picture }}" class="rounded-circle me-2" width="32" height="32" alt="Profile">
+							{% else %}
+								<span class="material-icons me-2">account_circle</span>
+							{% endif %}
+							{% if current_user.username is defined and current_user.username %}
+								{{ current_user.username }}
+							{% else %}
+								{{ current_user.email }}
+							{% endif %}
+						</a>
+						<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+							<li>
+								<a class="dropdown-item" href="{{ base_url }}/profile">
+									<span class="material-icons me-2 align-middle" style="font-size: 18px;">settings</span>Settings</a>
+							</li>
+							<li><hr class="dropdown-divider"></li>
+							<li>
+								<a class="dropdown-item" href="{{ base_url }}/logout">
+									<span class="material-icons me-2 align-middle" style="font-size: 18px;">logout</span>Sign out</a>
+							</li>
+						</ul>
+					</li>
+				{% else %}
+					<li class="nav-item">
+						<a class="nav-link" href="{{ base_url }}/login">
+							<span class="material-icons align-middle">login</span>
+							Login
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="{{ base_url }}/signup">
+							<span class="material-icons align-middle">person_add</span>
+							Sign Up
+						</a>
+					</li>
+				{% endif %}
+			</ul>
+		</div>
+	</div>
+</nav>

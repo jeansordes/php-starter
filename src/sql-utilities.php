@@ -14,11 +14,31 @@ class DB
             // SELECT ONE
             'select_user_from_id_user' => 'select * from users where id_user = :id_user',
             'select_user_from_email' => 'select * from users where email = :email',
+            'select_user_from_username' => 'select * from users where username = :username',
             // UPDATE
             'update_password_hash' => 'update users set password_hash = :new_password_hash where id_user = :id_user',
             'update_last_user_update' => 'update users set last_user_update = :new_date where id_user = :id_user',
+            'update_user_profile' => 'update users set username = :username where id_user = :id_user',
+            'update_user_profile_picture' => 'update users set profile_picture = :profile_picture where id_user = :id_user',
+            // Backup Email Management
+            'update_pending_backup_email' => 'update users set pending_backup_email = :email, backup_email_verification_token = :token where id_user = :id_user',
+            'verify_backup_email' => 'update users set backup_email = pending_backup_email, backup_email_verified_at = datetime("now"), pending_backup_email = null, backup_email_verification_token = null where id_user = :id_user and backup_email_verification_token = :token',
+            'remove_backup_email' => 'update users set backup_email = null, backup_email_verified_at = null where id_user = :id_user',
+            'clear_pending_backup_email' => 'update users set pending_backup_email = null, backup_email_verification_token = null where id_user = :id_user',
             // INSERT
-            'insert_user' => 'insert into users(email, user_role) values (:email, :user_role)',
+            'insert_user' => 'insert into users(email, user_role, password_hash, username) values (:email, :user_role, :password_hash, :username)',
+            // User Emails
+            'select_user_email_by_email' => 'SELECT * FROM user_emails WHERE email = :email',
+            'insert_user_email' => 'INSERT INTO user_emails (user_id, email, is_verified, is_default, verification_token) VALUES (:user_id, :email, 0, 0, :verification_token)',
+            'select_user_email_by_user_id_and_email' => 'SELECT * FROM user_emails WHERE user_id = :user_id AND email = :email',
+            'update_user_email_verified' => 'UPDATE user_emails SET is_verified = 1, verification_token = NULL WHERE id = :id',
+            'update_user_emails_unset_default' => 'UPDATE user_emails SET is_default = 0 WHERE user_id = :user_id',
+            'update_user_email_set_default' => 'UPDATE user_emails SET is_default = 1 WHERE id = :id AND user_id = :user_id',
+            'select_user_email_by_id_and_user_id' => 'SELECT * FROM user_emails WHERE id = :id AND user_id = :user_id',
+            'select_user_emails_by_user_id' => 'SELECT * FROM user_emails WHERE user_id = :user_id',
+            'update_user_email_set_pending_deletion' => 'UPDATE user_emails SET is_pending_deletion = 1, deletion_token = :deletion_token WHERE id = :id AND user_id = :user_id',
+            'select_user_email_pending_deletion_by_id_token_and_user_id' => 'SELECT * FROM user_emails WHERE id = :id AND deletion_token = :deletion_token AND user_id = :user_id AND is_pending_deletion = 1',
+            'update_user_email_cancel_pending_deletion' => 'UPDATE user_emails SET is_pending_deletion = 0, deletion_token = NULL WHERE id = :id',
             // DELETE
             '' => '',
         ][$key];
@@ -135,7 +155,7 @@ class DBStatement
     {
         switch ($this->_db_type) {
             case 'sqlite3':
-                return $this->_sqlite3_result->fetchArray();
+                return $this->_sqlite3_result->fetchArray(SQLITE3_ASSOC);
             case 'mariadb':
                 return $this->_stmt->fetch();
             default:
