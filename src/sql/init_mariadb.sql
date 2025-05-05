@@ -18,7 +18,7 @@ create or replace table users (
         foreign key (user_role) references _enum_user_role(description)
 );
 
--- admin account (admin_php_starter@yopmail.com:admin)
-insert into users(email, password_hash, user_role) values ('admin_php_starter@yopmail.com', '$2y$12$hA2wxJZhBLdHPJPQHQA.2e.sSUOqI/HAndSH8/9LD9WHn.cZ8qfz2', 'admin');
+-- admin account (admin_php_starter@yopmail.com:adminadmin)
+insert into users(email, password_hash, user_role) values ('admin_php_starter@yopmail.com', '$2y$12$yD0xPh9jOWRlxklhM9oyrunlWElZDSVrp/OgmClTrWYE09l/3u/le', 'admin');
 
 select 'Query done';

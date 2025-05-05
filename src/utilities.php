@@ -10,7 +10,15 @@ use Psr\Http\Message\ServerRequestInterface;
 function redirect($response, $url)
 {
     $r_url = getBaseUrl() . preg_replace('#/+#', '/', '/' . $url);
-    return $response->withRedirect($r_url);
+    return $response->withHeader('Location', $r_url)->withStatus(301);
+}
+
+function jsonResponse($response, $data, $status = 200)
+{
+    $response->getBody()->write(json_encode($data));
+    return $response
+        ->withHeader('Content-Type', 'application/json')
+        ->withStatus($status);
 }
 
 function getBaseUrl()
@@ -55,15 +63,16 @@ function loadDotEnv()
     (new \Symfony\Component\Dotenv\Dotenv())->load(__DIR__ . '/../.env');
 }
 
-function sendEmail($app, $response, $to, $subject, $body)
+function sendEmail($container, $response, $to, $subject, $body)
 {
     if ($_ENV['app_mode'] == 'dev') {
-        return $response->write($app->view->render('homepage.html.twig', [
+        $view = $container->get('view');
+        return $view->render($response, 'homepage.html.twig', [
             'title' => $subject,
             'body' => '<div class="alert alert-warning">Vous êtes en mode "dev" '
                 . 'ce que vous voyez actuellement est le mail qu\'on aurait envoyé en mode "prod" à '
                 . $to . '</div>' . $body,
-        ]));
+        ]);
     } else {
         // envoyer un email à l'adresse renseignée
         $mail = new PHPMailer();
@@ -80,7 +89,7 @@ function sendEmail($app, $response, $to, $subject, $body)
 
         // NO OUTPUT
         $mail->SMTPDebug = false;
-        $mail->do_debug = 0;
+        $mail->Debugoutput = 'error_log';
 
         //Recipients
         $mail->setFrom($_ENV['email_username']);
@@ -96,6 +105,8 @@ function sendEmail($app, $response, $to, $subject, $body)
             throw new Exception("<p>Message could not be sent. Mailer Error: {$mail->ErrorInfo}</p>"
                 . json_encode(['TO' => $to, 'SUBJECT' => $subject, 'BODY' => $body]));
         }
+        
+        return $response;
     }
 }
 
@@ -150,18 +161,13 @@ function alert($message, $meaning_code)
 
 function loggedInSlimMiddleware(array $allowed_roles)
 {
-    global $_allowed_roles;
-    $_allowed_roles = $allowed_roles;
-
-    return function (ServerRequestInterface $request, ResponseInterface $response, callable $next) {
-        global $_allowed_roles;
-        global $_internal_exception;
-        if (!empty($_SESSION["current_user"]) && in_array($_SESSION["current_user"]["user_role"], $_allowed_roles)) {
-            return $next($request, $response);
+    return function (ServerRequestInterface $request, $handler) use ($allowed_roles) {
+        if (!empty($_SESSION["current_user"]) && in_array($_SESSION["current_user"]["user_role"], $allowed_roles)) {
+            return $handler->handle($request);
         } else {
             $origin = debug_backtrace(1)[0];
             console_log($origin);
-            $e = new EditableException("Vous devez être <b>" . join(' ou ', $_allowed_roles) . "</b> pour pouvoir visualiser cette page", 0, $_internal_exception);
+            $e = new EditableException("Vous devez être <b>" . join(' ou ', $allowed_roles) . "</b> pour pouvoir visualiser cette page");
             $e->setFile($origin['file']);
             $e->setLine($origin['line']);
             throw $e;

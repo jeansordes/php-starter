@@ -1,7 +1,9 @@
 {
     "require": {
-        "slim/slim": "^3.0",
-        "slim/twig-view": "^2.2",
+        "slim/slim": "^4.11",
+        "slim/twig-view": "^3.3",
+        "slim/psr7": "^1.6",
+        "php-di/php-di": "^6.4",
         "phpmailer/phpmailer": "^6.2",
         "symfony/dotenv": "^5.2",
         "firebase/php-jwt": "^5.2"
@@ -10,5 +12,8 @@
         "psr-4": {
             "MyApp\\" : "src"
         }
+    },
+    "scripts": {
+        "start": "sh scripts/start.sh"
     }
 }

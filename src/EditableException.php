@@ -2,17 +2,25 @@
 
 namespace MyApp;
 
-class EditableException extends \Exception
+use Exception;
+
+class EditableException extends Exception
 {
-    public function setMessage($m) {
-        $this->message = $m;
+    public function setMessage(string $message): self
+    {
+        $this->message = $message;
+        return $this;
     }
 
-    public function setFile($f) {
-        $this->file = $f;
+    public function setFile(string $file): self
+    {
+        $this->file = $file;
+        return $this;
     }
 
-    public function setLine($l) {
-        $this->line = $l;
+    public function setLine(int $line): self
+    {
+        $this->line = $line;
+        return $this;
     }
 }
