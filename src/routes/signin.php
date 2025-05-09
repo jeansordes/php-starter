@@ -301,8 +301,8 @@ $app->post('/password-edit', function (Request $request, Response $response, arr
     if ($params['password1'] != $params['password2']) {
         alert('😕 Les deux mots de passes rentrées ne concordent pas, veuillez réessayer', 2);
         return redirect($response, $request->getUri()->getPath());
-    } else if (strlen($params['password1']) < 8) {
-        alert('Votre mot de passe doit contenir au moins 8 caractères', 2);
+    } else if (strlen($params['password1']) < 4) {
+        alert('Votre mot de passe doit contenir au moins 4 caractères', 2);
         return redirect($response, $request->getUri()->getPath());
     } else {
         $db = new DB();

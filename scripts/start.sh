@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # Ouvrir le navigateur
-open http://localhost:8888
+open http://localhost:8888 || start http://localhost:8888
 
 # Kill le serveur PHP qui tourne sur le port 8888
 kill -9 $(lsof -t -i:8888)

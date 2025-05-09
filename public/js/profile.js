@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Set a timer to wait for the user to finish typing
         validationTimer = setTimeout(function () {
             // Use the globally defined baseUrl variable
-            const validationUrl = baseUrl + "/profile/validate-username";
+            const validationUrl = "/profile/validate-username";
             const postBody = "username=" + encodeURIComponent(username);
 
             fetch(validationUrl, {

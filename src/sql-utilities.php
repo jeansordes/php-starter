@@ -55,13 +55,6 @@ class DB
                 if (!class_exists('SQLite3'))
                     throw new \Exception("SQLite 3 is NOT supported");
                 $this->_db = new SQLite3(__DIR__ . '/sql/' . $_ENV['db_name'] . '.db');
-                $res = $this->_db->query("select name from sqlite_master");
-                if (!$res->fetchArray()) {
-                    console_log("DB intialized");
-                    if (!$this->_db->exec(file_get_contents(__DIR__ . '/sql/init_sqlite3.sql'))) {
-                        throw new \Exception($this->_db->lastErrorMsg());
-                    }
-                }
                 break;
             case 'mariadb':
                 try {

@@ -14,6 +14,7 @@
         }
     },
     "scripts": {
-        "start": "sh scripts/start.sh"
+        "start": "sh scripts/start.sh",
+        "db:rebuild": "php src/sql/run_all_migrations.php"
     }
 }
