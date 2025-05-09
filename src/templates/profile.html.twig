@@ -71,12 +71,12 @@
 						{% endif %}
 
 						{% if user.backup_email %}
-							<div class="input-group">
-								<input type="text" class="form-control" value="{{ user.backup_email }}" readonly>
-								<form action="{{ base_url }}/profile/backup-email/remove" method="post" style="display: inline;">
+							<form action="{{ base_url }}/profile/backup-email/remove" method="post" style="display: inline;">
+								<div class="input-group">
+									<input type="text" class="form-control" value="{{ user.backup_email }}" readonly>
 									<button type="submit" class="btn btn-outline-danger">Remove</button>
-								</form>
-							</div>
+								</div>
+							</form>
 							{% if user.backup_email_verified_at %}
 								<small class="text-success">✓ Verified on
 									{{ user.backup_email_verified_at|date('Y-m-d') }}</small>
@@ -115,9 +115,5 @@
 {% endblock %}
 
 {% block javascripts %}
-	<script>
-		// Define the base URL for use in external JavaScript files
-		const baseUrl = '{{ base_url }}';
-	</script>
-	<script src="{{ base_url }}/public/js/profile.js"></script>
+    <script src="{{ base_url }}/public/js/profile.js"></script>
 {% endblock %}
