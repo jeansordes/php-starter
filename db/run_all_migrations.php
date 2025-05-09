@@ -1,8 +1,10 @@
 <?php
-require_once __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__ . '/../utilities.php';
-require_once __DIR__ . '/../sql-utilities.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../app/utilities.php';
+require_once __DIR__ . '/../app/sql-utilities.php';
 loadDotEnv();
+
+echo "Current directory: " . getcwd() . "\n";
 
 function executeMigrations() {
     $db = new DB();

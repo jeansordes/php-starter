@@ -1,7 +1,31 @@
-# Sample website in PHP
-Because I do a lot of side projects all the time, I created this repo in order to be able to quickly run a php website from anywhere I want with the least amount of software installed.
+# PHP Starter Project
 
-Feel free to use it :)
+A PHP starter project with a modern structure that separates public files from application code.
+
+## Project Structure
+
+- `public/` - Document root containing the front controller and public assets
+- `app/` - Application core with routes, templates, and business logic
+- `vendor/` - Composer dependencies
+- `db/` - Database migrations and setup scripts
+- `scripts/` - Development and utility scripts
+- `uploads/` - Directory for file uploads (not served directly)
+
+## Setup
+
+1. Clone the repository
+2. Run `composer install`
+3. Copy `.default.env` to `.env` and configure your environment variables
+4. Run `composer start` to start the development server
+
+## Development
+
+- Use `composer start` to start the development server
+- Use `composer db:rebuild` to rebuild the database
+
+## Security
+
+The project is structured to prevent direct access to sensitive files. Only files in the `public/` directory are directly accessible through the web server.
 
 ## Basic prerequisites
 - PHP needed

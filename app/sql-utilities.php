@@ -66,7 +66,7 @@ class DB
             case 'sqlite3':
                 if (!class_exists('SQLite3'))
                     throw new \Exception("SQLite 3 is NOT supported");
-                $this->_db = new SQLite3(__DIR__ . '/sql/' . $_ENV['db_name'] . '.db');
+                $this->_db = new SQLite3(__DIR__ . '/../db/' . $_ENV['db_name'] . '.db');
                 break;
             case 'mariadb':
                 try {

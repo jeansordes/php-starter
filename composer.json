@@ -10,11 +10,11 @@
     },
     "autoload": {
         "psr-4": {
-            "MyApp\\" : "src"
+            "MyApp\\" : "app"
         }
     },
     "scripts": {
         "start": "sh scripts/start.sh",
-        "db:rebuild": "php src/sql/run_all_migrations.php"
+        "db:rebuild": "php db/run_all_migrations.php"
     }
 }

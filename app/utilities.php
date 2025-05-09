@@ -78,7 +78,7 @@ function sendEmail($container, $response, $to, $subject, $body)
 {
     if ($_ENV['app_mode'] == 'dev') {
         $view = $container->get('view');
-        return $view->render($response, 'homepage.html.twig', [
+        return $view->render($response, 'base.html.twig', [
             'title' => $subject,
             'body' => '<div class="alert alert-warning">Vous êtes en mode "dev" '
                 . 'ce que vous voyez actuellement est le mail qu\'on aurait envoyé en mode "prod" à '

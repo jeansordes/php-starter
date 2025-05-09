@@ -298,9 +298,9 @@ $app->post('/password-edit', function (Request $request, Response $response, arr
     $params = $request->getParsedBody();
 
     $db = new DB();
-    $req = $db->prepareNamedQuery('select_app_config');
-    $req->execute();
-    $app_config = $req->fetchAll();
+    $req = $db->prepareNamedQuery('select_app_config_from_config_key');
+    $req->execute(['config_key' => 'password_min_length']);
+    $app_config = $req->fetch();
     
     // vérifier que le mot de passe a bien été rentré
     if ($params['password1'] != $params['password2']) {
