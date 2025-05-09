@@ -1,11 +1,15 @@
+# Directories
+.vscode/*
 vendor/*
-src/templates/cache/*
-composer.phar
-uploads/*
+**/app/templates/cache/*
+**/uploads/*
+
+# Files
 .env
 *.db
-.vscode/**
+composer.phar
 
+# Keep these files
 !**/.htaccess
 !**/.gitkeep
 !.vscode/php-starter.code-snippets
