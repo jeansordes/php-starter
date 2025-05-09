@@ -202,6 +202,12 @@ $app->post('/signup', function (Request $request, Response $response, array $arg
     // Handle username - use provided or generate unique default
     $username = $params['username'] ?? '';
     
+    // Validate username format using regex if provided
+    if (!empty($username) && !preg_match('/^[a-zA-Z0-9_]{1,15}$/', $username)) {
+        alert('Username can only contain letters, numbers, and underscores, and must be between 1 and 15 characters long.', 3);
+        return redirect($response, $request->getUri()->getPath() . '?' . array_to_url_encoding($params));
+    }
+
     if (!empty($username)) {
         // Check if provided username is unique
         $req = $db->prepareNamedQuery('select_user_from_username');

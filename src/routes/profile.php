@@ -56,9 +56,15 @@ $app->post('/profile', function (Request $request, Response $response, array $ar
         return redirect($response, '/profile');
     }
 
+    // 2. Validate username format using regex
+    if (!preg_match('/^[a-zA-Z0-9_]{1,15}$/', $new_username)) {
+        alert('Username can only contain letters, numbers, and underscores, and must be between 1 and 15 characters long.', 3);
+        return redirect($response, '/profile');
+    }
+
     $db = new DB();
 
-    // 2. Check if the username already exists for another user
+    // 3. Check if the username already exists for another user
     $existing_user_req = $db->prepareNamedQuery('select_user_from_username');
     $existing_user_req->execute(['username' => $new_username]);
     $existing_user = $existing_user_req->fetch();
@@ -165,14 +171,19 @@ $app->post('/profile/validate-username', function (Request $request, Response $r
     if (empty($username)) {
         $response_data = ['valid' => false, 'message' => 'Username cannot be empty.'];
     } else {
-        $db = new DB();
-        // Check if the username already exists for another user
-        $existing_user_req = $db->prepareNamedQuery('select_user_from_username');
-        $existing_user_req->execute(['username' => $username]);
-        $existing_user = $existing_user_req->fetch();
+        // Validate username format using regex
+        if (!preg_match('/^[a-zA-Z0-9_]{1,15}$/', $username)) {
+            $response_data = ['valid' => false, 'message' => 'Username can only contain letters, numbers, and underscores, and must be between 1 and 15 characters long.'];
+        } else {
+            $db = new DB();
+            // Check if the username already exists for another user
+            $existing_user_req = $db->prepareNamedQuery('select_user_from_username');
+            $existing_user_req->execute(['username' => $username]);
+            $existing_user = $existing_user_req->fetch();
 
-        if ($existing_user && $existing_user['id_user'] !== $current_user_id) {
-            $response_data = ['valid' => false, 'message' => 'This username is already taken.'];
+            if ($existing_user && $existing_user['id_user'] !== $current_user_id) {
+                $response_data = ['valid' => false, 'message' => 'This username is already taken.'];
+            }
         }
     }
 
