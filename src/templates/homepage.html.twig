@@ -4,7 +4,10 @@
 
 {% block body %}
 <div class="container">
-    <h1>{{ title|raw }}</h1>
-    <p>{{ body|raw }}</p>
+    <h1>Welcome to the homepage :)</h1>
+    <p>Can't wait to see what you gonna code ᕕ( ՞ ᗜ ՞ )ᕗ</p>
+    {% if current_user.user_role == 'admin' %}
+        <p>Go to the <a href="/admin">admin page</a> to manage the app.</p>
+    {% endif %}
 </div>
 {% endblock %}

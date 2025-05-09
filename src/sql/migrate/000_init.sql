@@ -36,5 +36,15 @@ create table user_emails (
     FOREIGN KEY (user_id) REFERENCES users (id_user) ON DELETE CASCADE
 );
 
+drop table if exists app_config;
+create table app_config (
+    id integer primary key not null,
+    config_key varchar(255) not null,
+    config_value varchar(255) not null
+);
+insert into app_config (config_key, config_value) values ('admin_password_is_strong', '0');
+insert into app_config (config_key, config_value) values ('app_name', 'My App');
+insert into app_config (config_key, config_value) values ('password_min_length', '8');
+
 -- admin account (admin:admin)
 insert into users (email, username, password_hash, user_role) values ('admin@yopmail.com', 'admin', '$2y$12$TsWyfj6Ztaqow/fu6PFQPOHiABBFRx1Phawy1vl9/PS3cZppJedwW', 'admin');

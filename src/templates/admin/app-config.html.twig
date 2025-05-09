@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin Dashboard - App Config{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>App Configuration</h2>
+
+    {# Include the generic table template #}
+    {% include 'components/generic_table.html.twig' with {
+        columns: columns,
+        data: data,
+        create_enabled: create_enabled,
+        edit_enabled: edit_enabled,
+        delete_enabled: delete_enabled
+    } %}
+</div>
+{% endblock %}
+
+{# Customize the actions block for the generic table #}
+{% block actions %}
+    <form action="{{ base_url }}/admin/app-config/edit/{{ row.id }}" method="post" class="d-inline">
+        <input type="hidden" name="config_key" value="{{ row.config_key }}">
+        <input type="hidden" name="config_value" value="{{ row.config_value }}">
+        <button type="submit" class="btn btn-sm btn-primary">Edit</button>
+    </form>
+    
+    <form action="{{ base_url }}/admin/app-config/delete/{{ row.id }}" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this entry?');">
+        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+    </form>
+{% endblock %} 

@@ -296,13 +296,18 @@ $app->post('/password-edit', function (Request $request, Response $response, arr
     }
     
     $params = $request->getParsedBody();
+
+    $db = new DB();
+    $req = $db->prepareNamedQuery('select_app_config');
+    $req->execute();
+    $app_config = $req->fetchAll();
     
     // vérifier que le mot de passe a bien été rentré
     if ($params['password1'] != $params['password2']) {
         alert('😕 Les deux mots de passes rentrées ne concordent pas, veuillez réessayer', 2);
         return redirect($response, $request->getUri()->getPath());
-    } else if (strlen($params['password1']) < 4) {
-        alert('Votre mot de passe doit contenir au moins 4 caractères', 2);
+    } else if (strlen($params['password1']) < $app_config['password_min_length']) {
+        alert('Votre mot de passe doit contenir au moins ' . $app_config['password_min_length'] . ' caractères', 2);
         return redirect($response, $request->getUri()->getPath());
     } else {
         $db = new DB();

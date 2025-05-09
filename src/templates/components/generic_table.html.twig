@@ -1,0 +1,103 @@
+<table class="table table-bordered table-striped">
+	<thead>
+		<tr>
+			{% for column in columns %}
+				<th>{{ column }}</th>
+			{% endfor %}
+			{% if edit_enabled or delete_enabled %}
+				<th>Actions</th>
+			{% endif %}
+		</tr>
+	</thead>
+	<tbody>
+		{% if edit_enabled is defined and edit_enabled %}
+			{% for row in data %}
+				<tr>
+					<form method="post">
+						<input type="hidden" name="id" value="{{ row['id'] }}">
+						<input type="hidden" name="action" value="update">
+						{% for column in columns %}
+							<td>
+								{% if 'PRIMARY KEY' in columns_types[loop.index0] %}
+									{{ row[column] }}
+								{% elseif columns_types[loop.index0] == 'TEXT' %}
+									<textarea class="form-control" name="{{ column }}" rows="3">{{ row[column] }}</textarea>
+								{% elseif columns_types[loop.index0] == 'INTEGER' %}
+									<input type="number" class="form-control" name="{{ column }}" value="{{ row[column] }}">
+								{% elseif columns_types[loop.index0] == 'BOOLEAN' %}
+									<input type="checkbox" class="form-check-input" name="{{ column }}" value="1" {% if row[column] == 1 %} checked {% endif %}>
+								{% elseif columns_types[loop.index0] == 'DATETIME' %}
+									<input type="datetime-local" class="form-control" name="{{ column }}" value="{{ row[column] }}">
+								{% else %}
+									{{ row[column] }}
+									({{ columns_types[loop.index0] }})
+								{% endif %}
+							</td>
+						{% endfor %}
+						<td>
+							<div class="d-flex gap-2">
+								<button type="reset" class="btn btn-secondary">Reset</button>
+								<button type="submit" class="btn btn-outline-primary">Submit</button>
+								{% if delete_enabled %}
+									<label class="btn btn-outline-danger" for="{{ row['id'] }}-delete-button">Delete</label>
+								{% endif %}
+							</div>
+						</td>
+					</form>
+					<form method="post">
+						<input type="hidden" name="id" value="{{ row['id'] }}">
+						<input type="hidden" name="action" value="delete">
+						<button type="submit" class="d-none" id="{{ row['id'] }}-delete-button">Delete</button>
+					</form>
+				</tr>
+			{% endfor %}
+		{% else %}
+			{% for row in data %}
+				<tr>
+					{% for column in columns %}
+						<td>{{ row[column] }}</td>
+					{% endfor %}
+					{% if delete_enabled %}
+						<td>
+							<form method="post">
+								<input type="hidden" name="id" value="{{ row['id'] }}">
+								<input type="hidden" name="action" value="delete">
+								<button type="submit" class="btn btn-outline-danger">Delete</button>
+							</form>
+						</td>
+					{% endif %}
+				</tr>
+			{% endfor %}
+		{% endif %}
+	</tbody>
+</table>
+
+{% if create_enabled %}
+	<table class="table table-bordered table-secondary">
+		<tr>
+			<form method="post">
+				<input type="hidden" name="action" value="create">
+				{% for column in columns %}
+					{% if 'PRIMARY KEY' not in columns_types[loop.index0] %}
+						<td>
+							{% if columns_types[loop.index0] == 'TEXT' %}
+								<input type="text" class="form-control" name="{{ column }}" placeholder="Enter {{ column }}">
+							{% elseif columns_types[loop.index0] == 'INTEGER' %}
+								<input type="number" class="form-control" name="{{ column }}" placeholder="Enter {{ column }}">
+							{% elseif columns_types[loop.index0] == 'BOOLEAN' %}
+								<input type="checkbox" class="form-check-input" name="{{ column }}" value="1">
+							{% elseif columns_types[loop.index0] == 'DATETIME' %}
+								<input type="datetime-local" class="form-control" name="{{ column }}">
+							{% else %}
+								<input type="text" class="form-control" name="{{ column }}" placeholder="Enter {{ column }}">
+							{% endif %}
+						</td>
+					{% endif %}
+				{% endfor %}
+				<td class="d-flex gap-2">
+					<button type="submit" class="btn btn-primary">Add new entry</button>
+				</td>
+			</form>
+		</tr>
+	</tbody>
+</table>{% endif %}

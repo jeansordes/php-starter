@@ -3,6 +3,13 @@ require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/utilities.php';
 loadDotEnv();
 
+use MyApp\EditableException;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+
 class DB
 {
     // { <nom_requete> : { sql: string, args: array<string> } }
@@ -11,15 +18,18 @@ class DB
         return [
             // SELECT ALL
             'select_all_users' => 'select * from users',
+            'select_all_app_config' => 'select * from app_config',
             // SELECT ONE
             'select_user_from_id_user' => 'select * from users where id_user = :id_user',
             'select_user_from_email' => 'select * from users where email = :email',
             'select_user_from_username' => 'select * from users where username = :username',
+            'select_app_config_from_config_key' => 'select config_value from app_config where config_key = :config_key',
             // UPDATE
             'update_password_hash' => 'update users set password_hash = :new_password_hash where id_user = :id_user',
             'update_last_user_update' => 'update users set last_user_update = :new_date where id_user = :id_user',
             'update_user_profile' => 'update users set username = :username where id_user = :id_user',
             'update_user_profile_picture' => 'update users set profile_picture = :profile_picture where id_user = :id_user',
+            'update_app_config' => 'update app_config set config_key = :config_key, config_value = :config_value where id = :id',
             // Backup Email Management
             'update_pending_backup_email' => 'update users set pending_backup_email = :email, backup_email_verification_token = :token where id_user = :id_user',
             'verify_backup_email' => 'update users set backup_email = pending_backup_email, backup_email_verified_at = datetime("now"), pending_backup_email = null, backup_email_verification_token = null where id_user = :id_user and backup_email_verification_token = :token',
@@ -27,6 +37,7 @@ class DB
             'clear_pending_backup_email' => 'update users set pending_backup_email = null, backup_email_verification_token = null where id_user = :id_user',
             // INSERT
             'insert_user' => 'insert into users(email, user_role, password_hash, username) values (:email, :user_role, :password_hash, :username)',
+            'insert_app_config' => 'insert into app_config (config_key, config_value) values (:config_key, :config_value)',
             // User Emails
             'select_user_email_by_email' => 'SELECT * FROM user_emails WHERE email = :email',
             'insert_user_email' => 'INSERT INTO user_emails (user_id, email, is_verified, is_default, verification_token) VALUES (:user_id, :email, 0, 0, :verification_token)',
@@ -40,6 +51,7 @@ class DB
             'select_user_email_pending_deletion_by_id_token_and_user_id' => 'SELECT * FROM user_emails WHERE id = :id AND deletion_token = :deletion_token AND user_id = :user_id AND is_pending_deletion = 1',
             'update_user_email_cancel_pending_deletion' => 'UPDATE user_emails SET is_pending_deletion = 0, deletion_token = NULL WHERE id = :id',
             // DELETE
+            'delete_app_config' => 'DELETE FROM app_config WHERE id = :id',
             '' => '',
         ][$key];
     }
@@ -90,11 +102,6 @@ class DB
         }
     }
 
-    public function queryNamedQuery($request_name)
-    {
-        return $this->query($this->getQuery($request_name));
-    }
-
     public function prepare($sql_string)
     {
         switch ($this->_db_type) {
@@ -110,6 +117,65 @@ class DB
     public function prepareNamedQuery($request_name)
     {
         return $this->prepare($this->getQuery($request_name));
+    }
+
+    public function getColumnNames(string $tableName): array
+    {
+        switch ($this->_db_type) {
+            case 'sqlite3':
+                /** @var SQLite3Result */
+                $result = $this->_db->query("PRAGMA table_info('$tableName')");
+                $column_names = [];
+                // Iterate over the result set
+                while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+                    $column_names[] = $row['name'];
+                }
+                return $column_names;
+            case 'mariadb':
+                $result = $this->_db->query("SHOW COLUMNS FROM `$tableName`");
+                $column_names = [];
+                while ($row = $result->fetch(\PDO::FETCH_ASSOC)) {
+                    $column_names[] = $row['Field'];
+                }
+                return $column_names;
+            default:
+                throw new \Exception("Unknown DB type");
+        }
+    }
+
+    public function getColumnsTypes(string $tableName): array
+    {
+        switch ($this->_db_type) {
+            case 'sqlite3':
+                /** @var SQLite3Result */
+                $result = $this->_db->query("PRAGMA table_info('$tableName')");
+                $column_types = [];
+                while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+                    if (strpos($row['type'], 'INTEGER') !== false) {
+                        if ($row['pk'] == 1) {
+                            $column_types[] = 'INTEGER PRIMARY KEY';
+                        } else {
+                            $column_types[] = 'INTEGER';
+                        }
+                    } elseif (strpos($row['type'], 'TEXT') !== false || strpos($row['type'], 'varchar') !== false) {
+                        $column_types[] = 'TEXT';
+                    } elseif (strpos($row['type'], 'BOOLEAN') !== false) {
+                        $column_types[] = 'BOOLEAN';
+                    } elseif (strpos($row['type'], 'DATETIME') !== false) {
+                        $column_types[] = 'DATETIME';
+                    }
+                }
+                return $column_types;
+            case 'mariadb':
+                $result = $this->_db->query("SHOW COLUMNS FROM `$tableName`");
+                $column_types = [];
+                while ($row = $result->fetch(\PDO::FETCH_ASSOC)) {
+                    $column_types[] = $row['Type'];
+                }
+                return $column_types;
+            default:
+                throw new \Exception("Unknown DB type");
+        }
     }
 }
 

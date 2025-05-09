@@ -5,7 +5,7 @@
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 		<link href="{{ base_url }}/public/css/bootstrap.min.5.0.0-beta1.css" rel="stylesheet">
 		<link href="{{ base_url }}/public/css/styles.css" rel="stylesheet">
 		<title>
@@ -16,15 +16,34 @@
 		{% include 'components/navbar.html.twig' %}
 
 		{% if session_alert %}
-			<div class="alert {{ session_alert.meaning }} alert-dismissible fade show m-3" role="alert">
-				{{ session_alert.message|raw }}
-				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			{% for alert in session_alert %}
+				<div class="alert {{ alert.meaning }} alert-dismissible fade show m-3" role="alert">
+					{{ alert.message|raw }}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+			{% endfor %}
+		{% endif %}
+
+		{% if app_config.admin_password_is_strong == 0 %}
+			<div class="alert alert-danger m-3" role="alert">
+				<h4 class="alert-heading">Configuration Required!</h4>
+				<p>The application needs further configuration to be fully functional and secure.</p>
+				{% if current_user.user_role == 'admin' %}
+					<hr>
+                    <h4>Please address the following:</h4>
+                    <ul>
+                        {% if app_config.admin_password_is_strong == 0 %}
+                            <li>Change the admin password for a stronger one, and then set <code>admin_password_is_strong</code> to <code>1</code> in the database.</li>
+                        {% endif %}
+                    </ul>
+				{% endif %}
 			</div>
 		{% endif %}
+
 		{% block body %}{% endblock %}
 
-		<script src="{{ base_url }}/public/js/bootstrap.bundle.min.5.0.0-beta1.js"></script>
-		<script src="{{ base_url }}/public/js/script.js"></script>
+		 <script src="{{ base_url }}/public/js/bootstrap.bundle.min.5.0.0-beta1.js"></script>
+		 <script src="{{ base_url }}/public/js/script.js"></script>
 		{% block javascripts %}{% endblock %}
 	</body>
 </html>

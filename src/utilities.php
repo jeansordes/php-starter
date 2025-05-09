@@ -6,6 +6,7 @@ use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Slim\Views\Twig;
 
 function redirect($response, $url)
 {
@@ -163,7 +164,7 @@ function alert($message, $meaning_code)
 {
     $meaning_switch = ['alert-info', 'alert-success', 'alert-warning', 'alert-danger'];
 
-    $_SESSION['session_alert'] = [
+    $_SESSION['session_alert'][] = [
         'message' => $message,
         'meaning' => $meaning_switch[$meaning_code]
     ];
@@ -253,4 +254,17 @@ function generate_unique_username() {
     }
 
     return $username;
+}
+
+function getTableData(string $tableName)
+{
+    $db = new DB();
+    $column_names = $db->getColumnNames($tableName);
+    
+    // Placeholder data fetch - replace with actual dynamic fetch
+    $req = $db->prepare("SELECT * FROM $tableName");
+    $req->execute();
+    $data = $req->fetchAll();
+    $columns_types = $db->getColumnsTypes($tableName);
+    return ['columns' => $column_names, 'data' => $data, 'columns_types' => $columns_types];
 }

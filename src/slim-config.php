@@ -6,9 +6,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
-
 require_once __DIR__ . '/utilities.php';
-
+require_once __DIR__ . '/sql-utilities.php';
 // Create Container using PHP-DI
 $container = new Container();
 
@@ -16,12 +15,25 @@ $container = new Container();
 $container->set('view', function() {
     $twig = Twig::create(__DIR__ . '/templates', [
         'cache' => $_ENV['app_mode'] == 'dev' ? false : __DIR__ . '/templates/cache',
+        'debug' => $_ENV['app_mode'] == 'dev',
     ]);
+    $twig->getEnvironment()->addExtension(new \Twig\Extension\DebugExtension());
 
     // In the case the base path is not http://www.exemple.com/ but something like http://www.exemple.com/my-app/
     $twig->getEnvironment()->addGlobal('base_url', getBaseUrl());
     $twig->getEnvironment()->addGlobal('current_path', parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH));
     $twig->getEnvironment()->addGlobal('is_localhost', in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1']));
+
+    // Check if admin_password_is_strong is set in the database
+    $db = new DB();
+    $app_config = $db->prepareNamedQuery('select_all_app_config');
+    $app_config->execute();
+    $app_config = $app_config->fetchAll();
+    $app_config = array_reduce($app_config, function($carry, $item) {
+        $carry[$item['config_key']] = $item['config_value'];
+        return $carry;
+    }, []);
+    $twig->getEnvironment()->addGlobal('app_config', $app_config);
 
     // CURRENT USER
     $twig->getEnvironment()->addGlobal('current_user', (empty($_SESSION['current_user']) ? null : $_SESSION['current_user']));
